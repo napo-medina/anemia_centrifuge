@@ -6,7 +6,7 @@ images <- c(sample(images[-length(images)]), images[length(images)])
 
 ui <- fluidPage(
   imageOutput("image"),
-  numericInput("hematocrit", "Hematocrit value", min = 2, max = 99, value = 0),
+  numericInput("hematocrit", "Hematocrit value", value = 0),
   actionButton("button_next", "Next image"),
   downloadButton("download", "Save and download the information")
 )
