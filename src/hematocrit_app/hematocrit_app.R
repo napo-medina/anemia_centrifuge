@@ -1,11 +1,11 @@
 library(shiny)
 
-images <- list.files("images", full.names = TRUE)
+images <- list.files("fotos_hematocrito", full.names = TRUE)
 # Randomize image list, except for the last image
 images <- c(sample(images[-length(images)]), images[length(images)])
 
 ui <- fluidPage(
-  imageOutput("image"),
+  imageOutput("image", width = "auto", height = "auto"),
   numericInput("hematocrit", "Hematocrit value", value = 0),
   actionButton("button_next", "Next image"),
   downloadButton("download", "Save and download the information")
