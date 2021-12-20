@@ -1,6 +1,8 @@
 library(shiny)
 
 images <- list.files("images", full.names = TRUE)
+# Randomize image list, except for the last image
+images <- c(sample(images[-length(images)]), images[length(images)])
 
 ui <- fluidPage(
   imageOutput("image"),
