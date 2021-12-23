@@ -2,6 +2,7 @@ library(shiny)
 
 images <- list.files("fotos_hematocrito", full.names = TRUE)
 # Randomize image list, except for the last image
+set.seed(123)
 images <- c(sample(images[-length(images)]), images[length(images)])
 
 ui <- fluidPage(
