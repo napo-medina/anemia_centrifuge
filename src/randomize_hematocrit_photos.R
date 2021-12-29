@@ -46,16 +46,35 @@ write.xlsx(blind_df, here("data/hematocrit_photos/blind_df.xlsx"))
 # Reveal / decode photos -------------------
 
 master_df <- read_csv(here("data/hematocrit_photos/master_df.csv"))
-hematocrit_df <- tibble(
-  read.xlsx(here("data/hematocrit_photos/blind_df.xlsx"), sheetIndex = 1)
-)
-join_df <- function(master_df, hematocrit_df, author) {
-  res <- left_join(master_df, hematocrit_df, by = c("id", "new"))
-  res <- rename(res, "hematocrit_{author}" := hematocrit)
+
+read_hematocrit_files <- function(files) {
+  read_and_filter <- function(file) {
+    df <- read.xlsx(file, sheetIndex = 1)
+    df <- tibble(df)
+    df <- df[1:3]
+    df[[3]] <- suppressWarnings(as.numeric(df[[3]]))
+    df
+  }
+  res <- map(files, read_and_filter)
   res
 }
 
-join_df(master_df, hematocrit_df, "daniel")
+files <- list.files(here("data/hematocrit_data"))
+hematocrit_data <- read_hematocrit_files(files)
 
-# reduce2(list(), authors, join_df)
+join_df <- function(master_df, hematocrit_df) {
+  res <- left_join(master_df, hematocrit_df, by = c("id", "new"))
+  res
+}
 
+reduce(hematocrit_data, join_df, master_df = master_df)
+
+
+
+# # This part uses a character vector of authors to rename the column of the
+# # hematocrit values
+# join_df <- function(master_df, hematocrit_df, author) {
+#   res <- left_join(master_df, hematocrit_df, by = c("id", "new"))
+#   res <- rename(res, "hematocrit_{author}" := hematocrit)
+#   res
+# }
