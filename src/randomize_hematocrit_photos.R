@@ -55,26 +55,22 @@ read_hematocrit_files <- function(files) {
     df[[3]] <- suppressWarnings(as.numeric(df[[3]]))
     df
   }
-  res <- map(files, read_and_filter)
-  res
+  result <- map(files, read_and_filter)
+  result
 }
 
-files <- list.files(here("data/hematocrit_data"))
+files <- list.files(here("data/hematocrit_data"), full.names = TRUE)
 hematocrit_data <- read_hematocrit_files(files)
 
-join_df <- function(master_df, hematocrit_df) {
-  res <- left_join(master_df, hematocrit_df, by = c("id", "new"))
-  res
+join_df <- function(df1, df2) {
+  result <- left_join(df1, df2, by = c("id", "new"))
+  result
 }
 
-reduce(hematocrit_data, join_df, master_df = master_df)
+final_result <- reduce(hematocrit_data, join_df)
+final_result <- left_join(master_df, final_result, by = c("id", "new"))
 
+# Write the results
 
+write_csv(final_result, here("data/hematocrit_data", "hematocrit_full_data.csv"))
 
-# # This part uses a character vector of authors to rename the column of the
-# # hematocrit values
-# join_df <- function(master_df, hematocrit_df, author) {
-#   res <- left_join(master_df, hematocrit_df, by = c("id", "new"))
-#   res <- rename(res, "hematocrit_{author}" := hematocrit)
-#   res
-# }
