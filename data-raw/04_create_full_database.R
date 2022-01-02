@@ -5,6 +5,8 @@ library(here)
 library(xlsx)
 library(stringr)
 library(lubridate)
+library(tidyr)
+library(stringr)
 
 # Original database ---------
 
@@ -68,6 +70,28 @@ values_centrifuge <- hematocrit %>% filter(!runrun) %>% arrange_chr() %>% select
 
 database <- left_join(database, values_runrun, by = "id")
 database <- left_join(database, values_centrifuge, by = "id", suffix = c("_runrun", "_centrifuge"))
+
+# Only have one column with the hematocrit values and other column for the method used
+database <- database %>% pivot_longer(c(hematocrit_runrun, hematocrit_centrifuge), names_to = "method")
+database <- database %>%
+  mutate(
+    method = str_remove(method, "hematocrit_"),
+    dispositivo = str_remove(dispositivo, "dispositivo ")
+  )
+
+# Rename columns
+database <- database %>%
+  rename(
+    date = fecha,
+    time_sample = hora_muestra,
+    time_runrun = hora_runrun,
+    time_centrifuge = hora_centrifugadora,
+    age = edad,
+    sex = sexo,
+    operator = operario,
+    device = dispositivo,
+    hematocrit = value
+  )
 
 
 # Write ------------
