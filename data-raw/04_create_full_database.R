@@ -25,9 +25,6 @@ database <- database %>%
     dispositivo
   )
 
-# Drop rows without information
-database <- database %>% filter(!is.na(fecha))
-
 # ID should be a character to match with the names of the images
 database$id <- formatC(database$id, width = 2, format = "d", flag = "0")
 
