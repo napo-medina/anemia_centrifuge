@@ -1,23 +1,16 @@
-library(readxl)
-library(lubridate)
+library(here)
+library(readr)
 library(dplyr)
+library(ggplot2)
+library(tidyr)
 
-dat <- read_excel("database_excel.xlsx", sheet = 1)
+dat <- read_rds(here("data/database.rds"))
 
-# Transform time ---------------
+# Exploratory analysis -----------
 
-get_time <- function(x) {
-  # Transform to seconds
-  res <- 0
-  res <- res + hour(x) * 60 * 60
-  res <- res + minute(x) * 60
-  res <- res + second(x)
-  hms::as_hms(res)
-}
+dat_plot <- dat %>% pivot_wider(names_from = method, values_from = hematocrit)
 
-dat <- mutate(dat, across(starts_with("hora"), get_time))
-
-
-# ----------------
-
-
+ggplot(dat_plot) +
+  geom_point(aes(id, runrun), color = "blue") +
+  geom_point(aes(id, centrifuge), color = "red") +
+  geom_linerange(aes(id, ymax = runrun, ymin = centrifuge))
